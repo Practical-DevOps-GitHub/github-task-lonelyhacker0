@@ -1,0 +1,16 @@
+name: Discord Notification
+
+on:
+  pull_request:
+    types: [opened, closed, reopened]
+
+jobs:
+  notify-discord:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Discord notification
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        uses: Ilshidur/action-discord@master
+        with:
+          args: '🔔 **Pull Request {{ EVENT_PAYLOAD.action }}** in {{ EVENT_PAYLOAD.repository.full_name }} by {{ EVENT_PAYLOAD.pull_request.user.login }}: {{ EVENT_PAYLOAD.pull_request.title }}'
