@@ -80,7 +80,8 @@ class ScriptTest < Test::Unit::TestCase
   end
 
   def test_2_approvals_develop
-    classic_required_approving_review_count = @obj.rules_required_pull_request_reviews('develop').nil? || @obj.rules_required_pull_request_reviews('develop')["required_approving_review_count"]
+    protection_rules = @obj.rules_required_pull_request_reviews('develop')
+    classic_required_approving_review_count = protection_rules&.[]("required_approving_review_count")
     pull_request_rulesets_rules = @obj.get_branch_ruleset('develop')
     rulesets_required_approving_review_count = pull_request_rulesets_rules&.find { |rule| rule['type'] == 'pull_request' }&.[]('parameters')&.[]('required_approving_review_count')
     expected = 2
@@ -89,7 +90,8 @@ class ScriptTest < Test::Unit::TestCase
   end
 
   def test_without_approval_main
-    classic_required_approving_review_count = @obj.rules_required_pull_request_reviews('main').nil? || @obj.rules_required_pull_request_reviews('main')["required_approving_review_count"]
+    protection_rules = @obj.rules_required_pull_request_reviews('main')
+    classic_required_approving_review_count = protection_rules&.[]("required_approving_review_count")
     pull_request_rulesets_rules = @obj.get_branch_ruleset('main')
     rulesets_required_approving_review_count = pull_request_rulesets_rules&.find { |rule| rule['type'] == 'pull_request' }&.[]('parameters')&.[]('required_approving_review_count')
     expected = 0
@@ -99,7 +101,8 @@ class ScriptTest < Test::Unit::TestCase
 
   def test_approve_from_user
     user_name = 'softservedata'
-    classic_require_code_owner_review = @obj.rules_required_pull_request_reviews('main')["require_code_owner_reviews"]
+    protection_rules = @obj.rules_required_pull_request_reviews('main')
+    classic_require_code_owner_review = protection_rules&.[]("require_code_owner_reviews")
     pull_request_rulesets_rules = @obj.get_branch_ruleset('main')
     rulesets_require_code_owner_review = pull_request_rulesets_rules&.find { |rule| rule['type'] == 'pull_request' }&.[]('parameters')&.[]('require_code_owner_review')
     assert(classic_require_code_owner_review || rulesets_require_code_owner_review, "We should not allow merge to main branch without approve from #{user_name}")
